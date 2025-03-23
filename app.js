@@ -5,6 +5,8 @@ import userRouter from './routes/user.routes.js';
 import authRouter from './routes/auth.routes.js';
 import subsRouter from './routes/subscription.routes.js';
 
+import connectToDatabase from './database/mongodb.js';
+
 const app = express();
 
 // to specify what routes the app must use
@@ -18,11 +20,15 @@ app.use("/api/v1/subscriptions", subsRouter);
 
 // route and callback function
 app.get( '/', ( req, res ) => {
-	res.send("Hello, World!\nWelcome to the Subscription Tracker API!");
+  res.send("Hello, World!\nWelcome to the Subscription Tracker API!");
 });
 
-app.listen(PORT, () => {
-	console.log(`Subscription API running on port http://localhost:${PORT}`);
+app.listen(PORT, async () => {
+  console.log(`Subscription API running on port http://localhost:${PORT}`);
+
+  // connect to database happpens after the server is up and running
+  await connectToDatabase(); // basically wait for this to complete
+			     // before going further in the program
 });
 
 export default app;
