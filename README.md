@@ -27,6 +27,7 @@ Hands On session will have advanced features like Rate limiting and Bot protecti
 ## Tech Stack
 
 - MongoDB and Mongoose for Database management
+- jsonwebtoken and bcryptfs for user authentication
 - upstash for everything in between
 - ArcJet for security
 - Hostinger for vps

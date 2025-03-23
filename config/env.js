@@ -11,7 +11,11 @@ config( { path : `.env.${process.env.NODE_ENV || 'development'}.local`} );
 //config({ path: ".env.development.local" });
 
 // now you can export the port from the env file
-export const { PORT, NODE_ENV, DB_URI } = process.env;
+export const {
+	PORT, NODE_ENV, 
+	DB_URI,
+	JWT_SECRET, JWT_EXPIRES_IN,
+	} = process.env;
 
 // for wtv reason a console.log prints the port and node_env from process.env
 // but the import doesn't work in main app.js
