@@ -21,7 +21,7 @@ export const getUser = async (req, res, next) => {
 	// get single user
 	try{
 		// select '-password' selects all fields except password
-		const users = await User.findById( req.params.id ).select('-password');
+		const user = await User.findById( req.params.id ).select('-password');
 
 		if (!user){
 			const error = new Error('User not found');
