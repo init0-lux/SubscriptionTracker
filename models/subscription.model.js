@@ -40,16 +40,16 @@ const subscriptionSchema = new mongoose.Schema({
 
 	status: {
 		type: String,
-		enum: ['active', 'inactive', 'canceled'],
+		enum: ['active', 'inactive', 'cancelled'],
 		default: 'active',
 	},
 
 	startDate: {
 		type: Date,
 		required: true,
-		validation: {
+		validate: {
 			validator: function(value) {
-				return value > new Date();
+				return value <= new Date();
 			},
 			message: "Start date must be a future date",
 		},
@@ -57,7 +57,7 @@ const subscriptionSchema = new mongoose.Schema({
 
 	renewalDate: {
 		type: Date,
-		validation: {
+		validate: {
 			validator: function(value) {
 				return value > this.startDate;
 			},
@@ -78,7 +78,7 @@ const subscriptionSchema = new mongoose.Schema({
 
 // auto calculate renewal date if missing
 // based on startDate and renewalPeriod
-subscriptionSchema.pre('save', (next) => {
+subscriptionSchema.pre('save', function (next) {
 	if (!this.renewalDate) {
 		const renewalPeriods = {
 			daily: 1,
