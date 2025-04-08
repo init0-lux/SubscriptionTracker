@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import Subscription from '../models/subscription.model.js';
 import { workflowClient } from '../config/upstash.js';
 
+import { sendReminderEmail } from '../utils/send-email.js';
+
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 // this enables 'require' in esm, which the rest of the project is using
@@ -24,7 +26,6 @@ export const sendReminders = serve( async ( context ) => {
 		return;
 	}
 
-
 	// actual workflow logic
 	for(const daysBefore of REMINDERS){
 		const reminderDate = renewalDate.subtract(daysBefore, 'day');
@@ -38,9 +39,11 @@ export const sendReminders = serve( async ( context ) => {
 			return;
 		}
 
-		if( reminderDate.isBefore(dayjs()) ){
-			console.log(`Sending reminder to ${subscription.user.email} for subscription ${subscriptionId} in ${daysBefore} days`);
+		if ( now.isSame(reminderDate, 'day') ){
+			await triggerReminder(context, `${daysBefore} days before reminder`, subscription);
 		}
+
+		await triggerReminder( context, `${daysBefore} days before reminder`, subscription);
 	}
 
 	// getting out of the workflow is sorted, now we figure out what to do in the workflow
@@ -57,9 +60,15 @@ const sleepUntilReminder = async ( context, label, date ) => {
 	await context.sleepUntil(label, date.toDate());
 };
 
-const triggerReminder = async ( context, subscriptionId, daysBefore ) => {
-	return await context.run(label, () => {
+const triggerReminder = async ( context, label, subscription ) => {
+	return await context.run(label, async () => {
 		// any custom logic goes here
 		console.log(`Triggering ${label} reminder`);
+
+		await sendReminderEmail({
+			to: subscription.user.email,
+			type: label,
+			subscription: subscription
+		});
 	});
 };
